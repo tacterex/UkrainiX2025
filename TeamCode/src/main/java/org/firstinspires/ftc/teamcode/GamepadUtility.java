@@ -3,14 +3,33 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class GamepadUtility {
-    public double ly, lx, rx;
-    public boolean rbum_click;
+    public double ly, lx, rx, ry;
 
-    public void update(Gamepad gamepad){
-        ly = gamepad.left_stick_y;
-        lx = gamepad.left_stick_x;
-        rx = gamepad.right_stick_x;
+    private boolean isRbumClick = false, isLbumClick = false;
+    public boolean rbumClick, lBumClick;
 
-        rbum_click = gamepad.right_bumper && !rbum_click;
+    public boolean cross, triangle, square, circle;
+
+    Gamepad g;
+
+    public GamepadUtility(Gamepad gamepad){
+        g = gamepad;
+    }
+
+    public void update(){
+        ly = g.left_stick_y;
+        lx = g.left_stick_x;
+        rx = g.right_stick_x;
+        ry = g.right_stick_y;
+
+        lBumClick = g.left_bumper && !isLbumClick;
+        rbumClick = g.right_bumper && !isRbumClick;
+        isLbumClick = g.left_bumper;
+        isRbumClick = g.right_bumper;
+
+        circle = g.circle;
+        triangle = g.triangle;
+        cross = g.cross;
+        square = g.square;
     }
 }
