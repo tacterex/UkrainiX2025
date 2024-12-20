@@ -12,6 +12,7 @@ public abstract class RobotBase extends LinearOpMode {
     Servo grabber, adjuster, rotator;
     CRServo extender;
 
+    // Servo positions
     final double grabber_zero = 0,
             grabber_max = 1,
             grabber_mid = (grabber_max + grabber_zero) / 2;
