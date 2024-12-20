@@ -43,6 +43,8 @@ public abstract class RobotBase extends LinearOpMode {
         timer = new ElapsedTime();
     }
 
+    //Useful functions
+
     void move(){
         l1.setPower(drivetrain.l1);
         l2.setPower(drivetrain.l2);
