@@ -7,7 +7,7 @@ public class TeleOp_Robot1_5 extends RobotBase{
     @Override
     public void runOpMode(){
         hardware_setup();
-        GamepadUtility util1 = new GamepadUtility(gamepad1);
+        GamepadUtility util1 = new GamepadUtility(gamepad1); // Gamepad Setup
         GamepadUtility util2 = new GamepadUtility(gamepad2);
 
         waitForStart();
