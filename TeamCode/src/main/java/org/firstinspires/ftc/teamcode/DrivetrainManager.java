@@ -5,8 +5,8 @@ public class DrivetrainManager {
 
     public void calculate(double forward, double side, double turn, double shift){
         // Input
-        double theta = Math.atan2(-forward, -side);
-        double power = Math.hypot(-side, -forward);
+        double theta = Math.atan2(-forward, side);
+        double power = Math.hypot(  side, -forward);
 
         // Calculations
         double sin = Math.sin(theta - Math.PI / 4);
@@ -26,7 +26,7 @@ public class DrivetrainManager {
         }
 
         // Setting power
-        l1 = (Math.max(-1, Math.min(1, l1Power)) * shift);
+        l1 = -(Math.max(-1, Math.min(1, l1Power)) * shift);
         r1 = (Math.max(-1, Math.min(1, r1Power)) * shift);
         l2 = (Math.max(-1, Math.min(1, l2Power)) * shift);
         r2 = (Math.max(-1, Math.min(1, r2Power)) * shift);
