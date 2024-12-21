@@ -5,8 +5,9 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 public class GamepadUtility {
     public double ly, lx, rx, ry;
 
-    private boolean isRbumClick = false, isLbumClick = false;
+    boolean isRbumClick = false, isLbumClick = false, isLyClick = false;
     public boolean rbumClick, lBumClick;
+    public int lyClick;
 
     public boolean cross, triangle, square, circle;
 
@@ -24,8 +25,10 @@ public class GamepadUtility {
 
         lBumClick = g.left_bumper && !isLbumClick;
         rbumClick = g.right_bumper && !isRbumClick;
+        lyClick = (int) Math.signum(ly) * ((Math.abs(ly) >= 0.8 && !isLyClick) ? 1 : 0);
         isLbumClick = g.left_bumper;
         isRbumClick = g.right_bumper;
+        isLyClick = Math.abs(ly) >= 0.8;
 
         circle = g.circle;
         triangle = g.triangle;

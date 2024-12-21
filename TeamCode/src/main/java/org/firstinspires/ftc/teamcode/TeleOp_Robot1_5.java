@@ -27,7 +27,7 @@ public class TeleOp_Robot1_5 extends RobotBase{
 
             if(util2.rbumClick) grab_sample();
             if(util2.lBumClick) flip();
-            adjust(util2.ry * timer.milliseconds() * 0.0005);
+            adjust(util2.lyClick);
             timer.reset();
         }
     }

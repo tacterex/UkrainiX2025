@@ -21,7 +21,9 @@ public abstract class RobotBase extends LinearOpMode {
             rotator_max = 1,
             rotator_mid = (rotator_max + rotator_zero) / 2;
 
-    double adjuster_position = 0;
+    final double[] adjuster_possible_positions = {0, 0.2, 0.4, 0.6, 0.8, 1};
+    final int L = adjuster_possible_positions.length;
+    int adjuster_position = 0;
 
     DrivetrainManager drivetrain;
 
@@ -64,11 +66,13 @@ public abstract class RobotBase extends LinearOpMode {
         );
     }
 
-    void adjust(double value){
-        adjuster_position =
-                Math.min(1,
-                        Math.max(0,
-                                adjuster_position + value));
-        adjuster.setPosition(adjuster_position);
+    void adjust(int index){
+        if(index != 0){
+            adjuster_position =
+                    Math.min(L-1,
+                            Math.max(0,
+                                    adjuster_position + index));
+            adjuster.setPosition(adjuster_possible_positions[adjuster_position]);
+        }
     }
 }
