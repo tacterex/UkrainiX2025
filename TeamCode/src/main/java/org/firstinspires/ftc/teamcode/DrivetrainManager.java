@@ -1,7 +1,28 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.arcrobotics.ftclib.controller.PIDController;
+
 public class DrivetrainManager {
     public double r1, r2, l1, l2;
+
+    PIDController target_follower_forward,
+            target_follower_side,
+            target_follower_turn;
+    public static double p_forward = 0, i_forward = 0, d_forward = 0,
+            p_side = 0, i_side = 0, d_side = 0,
+            p_turn = 0, i_turn = 0, d_turn = 0;
+
+    public DrivetrainManager(){
+        target_follower_forward = new PIDController(
+                p_forward, i_forward, d_forward
+        );
+        target_follower_side = new PIDController(
+                p_side, i_side, d_side
+        );
+        target_follower_turn = new PIDController(
+                p_turn, i_turn, d_turn
+        );
+    }
 
     public void calculate(double forward, double side, double turn, double shift){
         // Input
