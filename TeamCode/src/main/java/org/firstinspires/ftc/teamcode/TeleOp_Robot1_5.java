@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name="Robot1_5", group="FTC25")
 public class TeleOp_Robot1_5 extends RobotBase{
+    static final double ticks_per_ms = 1;
+
     @Override
     public void runOpMode(){
         hardware_setup();
@@ -11,6 +13,8 @@ public class TeleOp_Robot1_5 extends RobotBase{
         GamepadUtility util2 = new GamepadUtility(gamepad2);
 
         waitForStart();
+        start_position();
+        previous_timer = timer.milliseconds();
         while(opModeIsActive()){
             util1.update();
             util2.update();
@@ -20,15 +24,23 @@ public class TeleOp_Robot1_5 extends RobotBase{
             move();
 
             //Driver2
-            hand_motor.setPower(util2.ly);
+            // arm_target += util2.ly * ticks_per_ms;
+            hand_motor.setPower(-util2.ly);
             extender.setPower(
-                    (util2.cross ? 1 : 0) - (util2.triangle ? 1 : 0)
+                    (util2.cross ? 1 : 0) - (util2.square ? 1 : 0)
             );
 
-            if(util2.rbumClick) grab_sample();
+            if(util2.rbumClick){
+                grab_sample();
+                gamepad2.rumble(300);
+            }
             if(util2.lBumClick) flip();
-            adjust(util2.ryClick);
-            timer.reset();
+            adjust(-util2.ryClick);
+
+            telemetry.addData("Arm target", arm_target);
+            telemetry.update();
+
+            previous_timer = timer.milliseconds();
         }
     }
 }

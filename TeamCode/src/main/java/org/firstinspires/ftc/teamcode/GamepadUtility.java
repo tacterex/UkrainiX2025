@@ -25,10 +25,10 @@ public class GamepadUtility {
 
         lBumClick = g.left_bumper && !isLbumClick;
         rbumClick = g.right_bumper && !isRbumClick;
-        ryClick = (int) Math.signum(ly) * ((Math.abs(ly) >= 0.8 && !isRyClick) ? 1 : 0);
+        ryClick = (int) Math.signum(ry) * ((Math.abs(ry) >= 0.8 && !isRyClick) ? 1 : 0);
         isLbumClick = g.left_bumper;
         isRbumClick = g.right_bumper;
-        isRyClick = Math.abs(ly) >= 0.8;
+        isRyClick = Math.abs(ry) >= 0.8;
 
         circle = g.circle;
         triangle = g.triangle;

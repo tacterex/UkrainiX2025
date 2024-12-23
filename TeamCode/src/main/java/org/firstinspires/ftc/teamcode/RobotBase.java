@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,21 +14,27 @@ public abstract class RobotBase extends LinearOpMode {
     CRServo extender;
 
     // Servo positions
-    final double grabber_zero = 0,
-            grabber_max = 1,
+    final double grabber_zero = 0.3,
+            grabber_max = 0.85,
             grabber_mid = (grabber_max + grabber_zero) / 2;
 
-    final double rotator_zero = 0,
-            rotator_max = 1,
+    final double rotator_zero = 0.06,
+            rotator_max = 0.77,
             rotator_mid = (rotator_max + rotator_zero) / 2;
 
-    final double[] adjuster_possible_positions = {0, 0.2, 0.4, 0.6, 0.8, 1};
+    public static double p_arm, i_arm, d_arm, f_arm;
+    PIDController armController;
+    double arm_target = 0, start_pos = 100;
+    public final double ticks_in_degree = 28 * 100.0 / 360;
+
+    final double[] adjuster_possible_positions = {0, 0.14, 0.26, 0.3, 0.4};
     final int L = adjuster_possible_positions.length;
     int adjuster_position = 0;
 
     DrivetrainManager drivetrain;
 
     ElapsedTime timer;
+    double previous_timer;
 
     void hardware_setup(){
         l1 = hardwareMap.get(DcMotor.class, "l1");
@@ -42,11 +49,28 @@ public abstract class RobotBase extends LinearOpMode {
 
         drivetrain = new DrivetrainManager();
 
+        armController = new PIDController(p_arm, i_arm, d_arm);
+
         timer = new ElapsedTime();
+        previous_timer = 0;
+    }
+
+    void update_arm(){
+        int arm_position = hand_motor.getCurrentPosition();
+        double pid = armController.calculate(arm_position, arm_target - start_pos);
+        double ff = Math.cos(Math.toRadians((arm_target - start_pos)
+                / ticks_in_degree)) * f_arm;
+        double power = pid + ff;
+        hand_motor.setPower(power);
+    }
+
+    void start_position(){
+        adjust(-1);
+        rotator.setPosition(rotator_zero);
+        grabber.setPosition(grabber_zero);
     }
 
     //Useful functions
-
     void move(){
         l1.setPower(drivetrain.l1);
         l2.setPower(drivetrain.l2);
