@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 public abstract class RobotBase extends LinearOpMode {
     DcMotor r1, r2, l1, l2;
@@ -24,7 +25,7 @@ public abstract class RobotBase extends LinearOpMode {
 
     public static double p_arm, i_arm, d_arm, f_arm;
     PIDController armController;
-    double arm_target = 0, start_pos = 100;
+    double arm_target = 0;
     public final double ticks_in_degree = 28 * 100.0 / 360;
 
     final double[] adjuster_possible_positions = {0, 0.14, 0.26, 0.3, 0.4};
@@ -35,6 +36,15 @@ public abstract class RobotBase extends LinearOpMode {
 
     ElapsedTime timer;
     double previous_timer;
+
+    final int[][] gamepadColors = {
+            {255, 0, 255},
+            {255, 255, 0},
+            {0, 200, 115},
+            {125, 0, 255},
+            {255, 0, 125},
+            {255, 255, 255}
+    };
 
     void hardware_setup(){
         l1 = hardwareMap.get(DcMotor.class, "l1");
@@ -50,6 +60,7 @@ public abstract class RobotBase extends LinearOpMode {
         drivetrain = new DrivetrainManager();
 
         armController = new PIDController(p_arm, i_arm, d_arm);
+        arm_target = hand_motor.getCurrentPosition();
 
         timer = new ElapsedTime();
         previous_timer = 0;
@@ -57,8 +68,8 @@ public abstract class RobotBase extends LinearOpMode {
 
     void update_arm(){
         int arm_position = hand_motor.getCurrentPosition();
-        double pid = armController.calculate(arm_position, arm_target - start_pos);
-        double ff = Math.cos(Math.toRadians((arm_target - start_pos)
+        double pid = armController.calculate(arm_position, arm_target);
+        double ff = Math.cos(Math.toRadians((arm_target)
                 / ticks_in_degree)) * f_arm;
         double power = pid + ff;
         hand_motor.setPower(power);
@@ -92,11 +103,18 @@ public abstract class RobotBase extends LinearOpMode {
 
     void adjust(int index){
         if(index != 0){
-            adjuster_position =
-                    Math.min(L-1,
-                            Math.max(0,
-                                    adjuster_position + index));
+            adjuster_position = Range.clip(
+                    adjuster_position + index,
+                    0,
+                    L-1
+            );
             adjuster.setPosition(adjuster_possible_positions[adjuster_position]);
+            gamepad2.setLedColor(
+                    gamepadColors[adjuster_position][0],
+                    gamepadColors[adjuster_position][1],
+                    gamepadColors[adjuster_position][2],
+                    10
+            );
         }
     }
 }
