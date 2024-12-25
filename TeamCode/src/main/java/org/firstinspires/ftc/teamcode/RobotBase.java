@@ -25,7 +25,7 @@ public abstract class RobotBase extends LinearOpMode {
 
     public static double p_arm, i_arm, d_arm, f_arm;
     PIDController armController;
-    double arm_target = 0, zero_position = 0;
+    int arm_target, zero_position;
     public final double ticks_in_degree = 28 * 100.0 / 360;
 
     final double[] adjuster_possible_positions = {0, 0.14, 0.26, 0.3, 0.4};
@@ -46,7 +46,7 @@ public abstract class RobotBase extends LinearOpMode {
             {255, 255, 255}
     };
 
-    void hardware_setup(){
+    public void hardware_setup(){
         l1 = hardwareMap.get(DcMotor.class, "l1");
         r1 = hardwareMap.get(DcMotor.class, "r1");
         l2 = hardwareMap.get(DcMotor.class, "l2");
@@ -60,6 +60,7 @@ public abstract class RobotBase extends LinearOpMode {
         drivetrain = new DrivetrainManager();
 
         armController = new PIDController(p_arm, i_arm, d_arm);
+        zero_position = StorageManager.load_calibration();
         arm_target = hand_motor.getCurrentPosition();
 
         timer = new ElapsedTime();
@@ -118,7 +119,8 @@ public abstract class RobotBase extends LinearOpMode {
         }
     }
 
-    void reset_arm(){
+    public void reset_arm(){
         zero_position = hand_motor.getCurrentPosition();
+        StorageManager.save_calibration(zero_position);
     }
 }
