@@ -9,7 +9,8 @@ public class GamepadUtility {
     public boolean rbumClick, lBumClick;
     public int ryClick;
 
-    public boolean cross, triangle, square, circle;
+    public boolean cross, triangle, square, circle,
+            home;
 
     Gamepad g;
 
@@ -33,6 +34,7 @@ public class GamepadUtility {
         circle = g.circle;
         triangle = g.triangle;
         cross = g.cross;
-        square = g.square;
+
+        home = g.ps;
     }
 }

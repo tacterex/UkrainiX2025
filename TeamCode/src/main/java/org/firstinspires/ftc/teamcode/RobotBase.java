@@ -25,7 +25,7 @@ public abstract class RobotBase extends LinearOpMode {
 
     public static double p_arm, i_arm, d_arm, f_arm;
     PIDController armController;
-    double arm_target = 0;
+    double arm_target = 0, zero_position = 0;
     public final double ticks_in_degree = 28 * 100.0 / 360;
 
     final double[] adjuster_possible_positions = {0, 0.14, 0.26, 0.3, 0.4};
@@ -69,7 +69,7 @@ public abstract class RobotBase extends LinearOpMode {
     void update_arm(){
         int arm_position = hand_motor.getCurrentPosition();
         double pid = armController.calculate(arm_position, arm_target);
-        double ff = Math.cos(Math.toRadians((arm_target)
+        double ff = Math.cos(Math.toRadians((arm_target - zero_position)
                 / ticks_in_degree)) * f_arm;
         double power = pid + ff;
         hand_motor.setPower(power);
@@ -116,5 +116,9 @@ public abstract class RobotBase extends LinearOpMode {
                     10
             );
         }
+    }
+
+    void reset_arm(){
+        zero_position = hand_motor.getCurrentPosition();
     }
 }

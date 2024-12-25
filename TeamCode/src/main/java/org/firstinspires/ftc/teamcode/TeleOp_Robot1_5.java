@@ -42,6 +42,8 @@ public class TeleOp_Robot1_5 extends RobotBase{
             if(util2.lBumClick) flip();
             adjust(-util2.ryClick);
 
+            if(util2.home) reset_arm();
+
             telemetry.addData("Arm target", arm_target);
             telemetry.update();
 
