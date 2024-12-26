@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -114,7 +115,7 @@ public abstract class RobotBase extends LinearOpMode {
                     gamepadColors[adjuster_position][0],
                     gamepadColors[adjuster_position][1],
                     gamepadColors[adjuster_position][2],
-                    10
+                    Gamepad.LED_DURATION_CONTINUOUS
             );
         }
     }
