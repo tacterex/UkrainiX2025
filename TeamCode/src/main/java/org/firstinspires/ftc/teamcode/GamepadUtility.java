@@ -10,7 +10,8 @@ public class GamepadUtility {
     public int ryClick;
 
     public boolean cross, triangle, square, circle,
-            home;
+            home,
+            dp_up, dp_down;
 
     Gamepad g;
 
@@ -36,5 +37,8 @@ public class GamepadUtility {
         cross = g.cross;
 
         home = g.ps;
+
+        dp_up = g.dpad_up;
+        dp_down = g.dpad_down;
     }
 }

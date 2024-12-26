@@ -27,8 +27,17 @@ public class TeleOp_Robot1_5 extends RobotBase{
             move();
 
             //Driver2
-            arm_target += util2.ly * ticks_per_ms * (timer.milliseconds() - previous_timer);
-            update_arm();
+            if(util2.dp_up || util2.dp_down)
+                hand_motor.setPower(
+                        (util2.dp_down ? 1 : 0) - (util2.dp_up ? 1 : 0)
+                );
+            else {
+                arm_target += (int)(
+                        util2.ly * ticks_per_ms * (timer.milliseconds() - previous_timer)
+                );
+                update_arm();
+            }
+
             //hand_motor.setPower(-util2.ly);
 
             extender.setPower(
