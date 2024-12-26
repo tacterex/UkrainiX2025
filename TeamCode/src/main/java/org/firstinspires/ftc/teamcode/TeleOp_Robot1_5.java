@@ -51,9 +51,13 @@ public class TeleOp_Robot1_5 extends RobotBase{
             if(util2.lBumClick) flip();
             adjust(-util2.ryClick);
 
-            if(util2.home) reset_arm();
+            if(util2.home){
+                reset_arm();
+                gamepad2.rumble(200);
+            }
 
             telemetry.addData("Arm target", arm_target);
+            telemetry.addData("Zero pos", zero_position);
             telemetry.update();
 
             previous_timer = timer.milliseconds();
