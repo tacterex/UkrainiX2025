@@ -25,7 +25,7 @@ public abstract class RobotBase extends LinearOpMode {
 
     public static double p_arm, i_arm, d_arm, f_arm;
     PIDController armController;
-    int arm_target, zero_position;
+    public static int arm_target, zero_position;
     public final double ticks_in_degree = 28 * 100.0 / 360;
 
     final double[] adjuster_possible_positions = {0, 0.14, 0.26, 0.3, 0.4};
