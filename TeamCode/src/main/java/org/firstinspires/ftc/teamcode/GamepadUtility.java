@@ -35,6 +35,7 @@ public class GamepadUtility {
         circle = g.circle;
         triangle = g.triangle;
         cross = g.cross;
+        square = g.square;
 
         home = g.ps;
 
