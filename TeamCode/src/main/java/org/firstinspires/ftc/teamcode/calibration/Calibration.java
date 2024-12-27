@@ -11,7 +11,7 @@ public class Calibration extends RobotBase {
         hardware_setup();
 
         waitForStart();
-        while(opModeIsActive()){
+        while(opModeIsActive()) {
             calibrate();
             reset_arm();
         }

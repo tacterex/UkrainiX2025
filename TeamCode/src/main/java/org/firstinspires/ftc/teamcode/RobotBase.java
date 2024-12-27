@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -24,10 +26,11 @@ public abstract class RobotBase extends LinearOpMode {
             rotator_max = 0.77,
             rotator_mid = (rotator_max + rotator_zero) / 2;
 
-    public static double p_arm, i_arm, d_arm, f_arm;
-    PIDController armController;
-    public static int arm_target, zero_position;
-    public final double ticks_in_degree = 28 * 100.0 / 360;
+    public static double p_arm = 0.0065, i_arm = 0.01, d_arm = 0.0009, f_arm = 0.17;
+    private PIDController armController;
+    public static double arm_target;
+    public int zero_position;
+    public final double ticks_in_degree = 28 * 100.0 / 360 * 6 / 1.875;
 
     final double[] adjuster_possible_positions = {0, 0.14, 0.26, 0.3, 0.4};
     final int L = adjuster_possible_positions.length;
@@ -36,15 +39,14 @@ public abstract class RobotBase extends LinearOpMode {
     DrivetrainManager drivetrain;
 
     ElapsedTime timer;
-    double previous_timer;
 
-    final int[][] gamepadColors = {
-            {255, 0, 255},
-            {255, 255, 0},
-            {0, 200, 115},
-            {125, 0, 255},
-            {255, 0, 125},
-            {255, 255, 255}
+    final double[][] gamepadColors = {
+            {1, 0.5, 0},
+            {1, 1, 0},
+            {0, 0.8, 0.4},
+            {1, 0, 0.5},
+            {0.5, 0, 1},
+            {1, 1, 1}
     };
 
     public void hardware_setup(){
@@ -63,9 +65,9 @@ public abstract class RobotBase extends LinearOpMode {
         armController = new PIDController(p_arm, i_arm, d_arm);
         zero_position = StorageManager.load_calibration();
         arm_target = hand_motor.getCurrentPosition();
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         timer = new ElapsedTime();
-        previous_timer = 0;
     }
 
     void update_arm(){

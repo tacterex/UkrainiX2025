@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name="Robot1_5", group="FTC25")
+@Config
+@TeleOp
 public class TeleOp_Robot1_5 extends RobotBase{
     GamepadUtility util1, util2;
 
-    final double ticks_per_ms = 1;
+    final double ticks_per_s = 1000;
 
     @Override
     public void runOpMode(){
@@ -16,9 +18,8 @@ public class TeleOp_Robot1_5 extends RobotBase{
 
         waitForStart();
         start_position();
-        previous_timer = timer.milliseconds();
 
-        while(opModeIsActive()){
+        while(opModeIsActive()) {
             util1.update();
             util2.update();
 
@@ -27,14 +28,12 @@ public class TeleOp_Robot1_5 extends RobotBase{
             move();
 
             //Driver2
-            if(util2.dp_up || util2.dp_down)
+            if (util2.dp_up || util2.dp_down)
                 hand_motor.setPower(
                         (util2.dp_down ? 1 : 0) - (util2.dp_up ? 1 : 0)
                 );
             else {
-                arm_target += (int)(
-                        util2.ly * ticks_per_ms * (timer.milliseconds() - previous_timer)
-                );
+                arm_target += (-util2.ly) * ticks_per_s;
                 update_arm();
             }
 
@@ -44,23 +43,24 @@ public class TeleOp_Robot1_5 extends RobotBase{
                     (util2.cross ? 1 : 0) - (util2.square ? 1 : 0)
             );
 
-            if(util2.rbumClick){
+            if (util2.rbumClick) {
                 grab_sample();
                 gamepad2.rumble(300);
             }
-            if(util2.lBumClick) flip();
+            if (util2.lBumClick) flip();
             adjust(-util2.ryClick);
 
-            if(util2.home){
+            if (util2.home) {
                 reset_arm();
                 gamepad2.rumble(200);
             }
 
             telemetry.addData("Arm target", arm_target);
+            telemetry.addData("Arm pos", hand_motor.getCurrentPosition());
             telemetry.addData("Zero pos", zero_position);
+            telemetry.addData("Adj pos", adjuster_position);
+            telemetry.addData("Power", hand_motor.getPower());
             telemetry.update();
-
-            previous_timer = timer.milliseconds();
         }
     }
 }
