@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -11,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-public abstract class RobotBase extends LinearOpMode {
+public abstract class RobotBase extends OpMode {
     DcMotor r1, r2, l1, l2;
     DcMotor hand_motor;
     Servo grabber, adjuster, rotator;
@@ -39,6 +40,7 @@ public abstract class RobotBase extends LinearOpMode {
     DrivetrainManager drivetrain;
 
     ElapsedTime timer;
+    double previous_timer;
 
     final double[][] gamepadColors = {
             {1, 0.5, 0},
@@ -48,6 +50,22 @@ public abstract class RobotBase extends LinearOpMode {
             {0.5, 0, 1},
             {1, 1, 1}
     };
+
+    private boolean first_cycle;
+
+    public abstract void preStart();
+    public abstract void postStartLoop();
+
+    @Override
+    public final void loop(){
+        if(first_cycle){
+            preStart();
+            first_cycle = false;
+        }
+        else{
+            postStartLoop();
+        }
+    }
 
     public void hardware_setup(){
         l1 = hardwareMap.get(DcMotor.class, "l1");
@@ -68,6 +86,9 @@ public abstract class RobotBase extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         timer = new ElapsedTime();
+        previous_timer = timer.seconds();
+
+        first_cycle = true;
     }
 
     void update_arm(){
