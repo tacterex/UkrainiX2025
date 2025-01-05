@@ -19,21 +19,22 @@ public abstract class RobotBase extends OpMode {
     CRServo extender;
 
     // Servo positions
-    final double grabber_zero = 0.3,
-            grabber_max = 0.85,
+    final double grabber_zero = 0.42,
+            grabber_max = 0.95,
             grabber_mid = (grabber_max + grabber_zero) / 2;
+    private boolean is_grabber_mid;
 
     final double rotator_zero = 0.06,
             rotator_max = 0.77,
             rotator_mid = (rotator_max + rotator_zero) / 2;
 
-    public static double p_arm = 0.0065, i_arm = 0.01, d_arm = 0.0009, f_arm = 0.17;
+    public static double p_arm = 0.0107, i_arm = 0.011 , d_arm = 0.0007, f_arm = 0.17;
     private PIDController armController;
     public static double arm_target;
     public int zero_position;
     public final double ticks_in_degree = 28 * 100.0 / 360 * 6 / 1.875;
 
-    final double[] adjuster_possible_positions = {0, 0.14, 0.26, 0.3, 0.4};
+    final double[] adjuster_possible_positions = {0.5, 0.66, 0.96, 1};
     final int L = adjuster_possible_positions.length;
     int adjuster_position = 0;
 
@@ -43,7 +44,7 @@ public abstract class RobotBase extends OpMode {
     double previous_timer;
 
     final double[][] gamepadColors = {
-            {1, 0.5, 0},
+            {1, 0.2, 0},
             {1, 1, 0},
             {0, 0.8, 0.4},
             {1, 0, 0.5},
@@ -104,6 +105,7 @@ public abstract class RobotBase extends OpMode {
         adjust(-1);
         rotator.setPosition(rotator_zero);
         grabber.setPosition(grabber_zero);
+        is_grabber_mid = false;
     }
 
     //Useful functions
@@ -115,9 +117,21 @@ public abstract class RobotBase extends OpMode {
     }
 
     void grab_sample(){
-        grabber.setPosition(
-                grabber.getPosition() >= grabber_mid ? grabber_zero : grabber_max
-        );
+        if(is_grabber_mid) grabber.setPosition(grabber_zero);
+        else
+            grabber.setPosition(
+                    grabber.getPosition() >= grabber_mid ? grabber_zero : grabber_max
+            );
+        is_grabber_mid = false;
+    }
+
+    void pos_specimen(){
+        rotator.setPosition(rotator_mid);
+    }
+
+    void mid_grab(){
+        grabber.setPosition(grabber_mid);
+        is_grabber_mid = true;
     }
 
     void flip(){
@@ -127,7 +141,7 @@ public abstract class RobotBase extends OpMode {
     }
 
     void adjust(int index){
-        if(index != 0){
+        if(index > 0 || index == -1){
             adjuster_position = Range.clip(
                     adjuster_position + index,
                     0,

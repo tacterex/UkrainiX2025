@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class TeleOp_Robot1_5 extends RobotBase{
     GamepadUtility util1, util2;
 
-    final double ticks_per_s = 1200;
+    final double ticks_per_s = 3400;
 
     @Override
     public void init(){
@@ -54,6 +54,11 @@ public class TeleOp_Robot1_5 extends RobotBase{
             grab_sample();
             gamepad2.rumble(300);
         }
+        if(util2.rTrigClick){
+            mid_grab();
+            gamepad2.rumble(300);
+        }
+
         if (util2.lBumClick) flip();
         adjust(-util2.ryClick);
 
@@ -61,6 +66,7 @@ public class TeleOp_Robot1_5 extends RobotBase{
             reset_arm();
             gamepad2.rumble(200);
         }
+        if(util2.lTrigClick) pos_specimen();
 
         telemetry.addData("Arm target", arm_target);
         telemetry.addData("Arm pos", hand_motor.getCurrentPosition());
