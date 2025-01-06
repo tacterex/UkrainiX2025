@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class TeleOp_Robot1_5 extends RobotBase{
     GamepadUtility util1, util2;
 
-    final double ticks_per_s = 3400;
+    final double ticks_per_s = 4500;
 
     @Override
     public void init(){
@@ -29,7 +29,7 @@ public class TeleOp_Robot1_5 extends RobotBase{
         util2.update();
 
         //Driver1
-        drivetrain.calculate(util1.ly, util1.lx, util1.rx * 0.6, 1);
+        drivetrain.calculate(util1.ly, util1.lx, util1.rx * 0.78, 1);
         move();
 
         //Driver2
