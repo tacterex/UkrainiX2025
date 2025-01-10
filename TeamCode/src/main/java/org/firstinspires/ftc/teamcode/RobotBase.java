@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -108,6 +107,12 @@ public abstract class RobotBase extends OpMode {
         rotator.setPosition(rotator_zero);
         grabber.setPosition(grabber_max);
         is_grabber_mid = false;
+    }
+
+    void auto_start_position(){
+        adjust(2);
+        rotator.setPosition(rotator_zero);
+        grabber.setPosition(grabber_zero);
     }
 
     //Useful functions
