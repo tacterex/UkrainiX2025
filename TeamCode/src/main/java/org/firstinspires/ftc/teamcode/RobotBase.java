@@ -19,22 +19,22 @@ public abstract class RobotBase extends OpMode {
     CRServo extender;
 
     // Servo positions
-    final double grabber_zero = 0.2,
-            grabber_max = 0.7,
+    final double grabber_zero = 0.57,
+            grabber_max = 1,
             grabber_mid = (grabber_max + grabber_zero) / 2 - 0.0;
     private boolean is_grabber_mid;
 
-    final double rotator_zero = 0.06,
-            rotator_max = 0.76,
+    final double rotator_zero = 0.13,
+            rotator_max = 0.83,
             rotator_mid = (rotator_max + rotator_zero) / 2;
 
-    public static double p_arm = 0.0117, i_arm = 0.011 , d_arm = 0.00074, f_arm = 0.17;
+    public static double p_arm = 0.0107, i_arm = 0.011 , d_arm = 0.00085, f_arm = 0.17;
     private PIDController armController;
     public static double arm_target;
     public int zero_position;
     public final double ticks_in_degree = 28 * 100.0 / 360 * 6 / 1.875;
 
-    final double[] adjuster_possible_positions = {0.64, 0.5, 0.33};
+    final double[] adjuster_possible_positions = {0.66, 0.58, 0.47};
     final int L = adjuster_possible_positions.length;
     int adjuster_position = 0;
 
@@ -86,6 +86,8 @@ public abstract class RobotBase extends OpMode {
         arm_target = hand_motor.getCurrentPosition();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
+        adjuster_position = 0;
+
         timer = new ElapsedTime();
         previous_timer = timer.seconds();
 
@@ -102,9 +104,9 @@ public abstract class RobotBase extends OpMode {
     }
 
     void start_position(){
-        adjust(-1);
+        adjust(2);
         rotator.setPosition(rotator_zero);
-        grabber.setPosition(grabber_zero);
+        grabber.setPosition(grabber_max);
         is_grabber_mid = false;
     }
 

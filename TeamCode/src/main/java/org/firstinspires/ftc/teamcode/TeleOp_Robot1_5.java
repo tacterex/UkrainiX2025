@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class TeleOp_Robot1_5 extends RobotBase{
     GamepadUtility util1, util2;
 
-    final double ticks_per_s = 4500;
+    final double ticks_per_s_up = 4752, ticks_per_s_down = 4252;
 
     @Override
     public void init(){
@@ -39,7 +39,8 @@ public class TeleOp_Robot1_5 extends RobotBase{
             );
         else {
             arm_target += (
-                    (-util2.ly) * ticks_per_s * (timer.seconds() - previous_timer)
+                    (-util2.ly) * (util2.ly > 0 ? ticks_per_s_down : ticks_per_s_up)
+                            * (timer.seconds() - previous_timer)
             );
             update_arm();
         }
