@@ -21,6 +21,7 @@ public class TeleOp_Robot1_5 extends RobotBase{
     public void preStart(){
         start_position();
         previous_timer = timer.seconds();
+        set_arm_bound(-55, -45, 90);
     }
 
     @Override

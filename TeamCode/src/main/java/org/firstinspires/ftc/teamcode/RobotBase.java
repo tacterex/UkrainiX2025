@@ -30,8 +30,8 @@ public abstract class RobotBase extends OpMode {
     public static double p_arm = 0.0107, i_arm = 0.011 , d_arm = 0.00085, f_arm = 0.17;
     private PIDController armController;
     public static double arm_target;
-    public int zero_position;
-    public final double ticks_in_degree = 28 * 100.0 / 360 * 6 / 1.875;
+    public int zero_position, min_position = -90, max_position = 90;
+    public final double ticks_in_degree = 28 * 36.0 / 360 * 109.2 / 20.2;
 
     final double[] adjuster_possible_positions = {0.66, 0.58, 0.47};
     final int L = adjuster_possible_positions.length;
@@ -94,6 +94,7 @@ public abstract class RobotBase extends OpMode {
     }
 
     void update_arm(){
+        arm_target = Range.clip(arm_target, min_position, max_position);
         int arm_position = hand_motor.getCurrentPosition();
         double pid = armController.calculate(arm_position, arm_target);
         double ff = Math.cos(Math.toRadians((arm_target - zero_position)
@@ -105,7 +106,7 @@ public abstract class RobotBase extends OpMode {
     void start_position(){
         adjust(2);
         rotator.setPosition(rotator_zero);
-        grabber.setPosition(grabber_max);
+        grabber.setPosition(grabber_zero);
         is_grabber_mid = false;
     }
 
@@ -167,5 +168,11 @@ public abstract class RobotBase extends OpMode {
     public void reset_arm(){
         zero_position = hand_motor.getCurrentPosition();
         StorageManager.save_calibration(zero_position);
+    }
+
+    public void set_arm_bound(double cur_degree, double min_degree, double max_degree){
+        zero_position = hand_motor.getCurrentPosition() - (int)(cur_degree * ticks_in_degree);
+        min_position = zero_position - (int)(min_degree * ticks_in_degree);
+        max_position = zero_position + (int)(max_degree * ticks_in_degree);
     }
 }
