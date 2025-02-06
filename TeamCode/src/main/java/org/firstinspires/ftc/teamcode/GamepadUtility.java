@@ -13,7 +13,7 @@ public class GamepadUtility {
 
     public boolean cross, triangle, square, circle,
             home,
-            dp_up, dp_down,
+            dp_up, dp_down, dp_right, dp_left,
             rTrig;
 
     Gamepad g;
@@ -49,6 +49,8 @@ public class GamepadUtility {
 
         dp_up = g.dpad_up;
         dp_down = g.dpad_down;
+        dp_right = g.dpad_right;
+        dp_left = g.dpad_left;
 
         rTrig = g.right_trigger > 0;
     }
