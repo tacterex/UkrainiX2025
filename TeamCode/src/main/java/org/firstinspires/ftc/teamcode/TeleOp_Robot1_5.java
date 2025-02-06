@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class TeleOp_Robot1_5 extends RobotBase{
     GamepadUtility util1, util2;
 
-    final double ticks_per_s_up = 4752, ticks_per_s_down = 4252;
+    final double ticks_per_s_up = 10200, ticks_per_s_down = 11500;
 
     @Override
     public void init(){
@@ -21,7 +21,6 @@ public class TeleOp_Robot1_5 extends RobotBase{
     public void preStart(){
         start_position();
         previous_timer = timer.seconds();
-        set_arm_bound(-55, -45, 90);
     }
 
     @Override
@@ -46,11 +45,26 @@ public class TeleOp_Robot1_5 extends RobotBase{
             update_arm();
         }
 
-        //hand_motor.setPower(-util2.ly);
+//        if(Math.abs(util2.ly) >= 0.05){
+//            if(util2.ly > 0 && hand_motor.getCurrentPosition() < max_position){
+//                hand_motor.setPower(-util2.ly);
+//                arm_target = hand_motor.getCurrentPosition();
+//            }
+//            if(util2.ly < 0 && hand_motor.getCurrentPosition() > min_position){
+//                hand_motor.setPower(-0.5 * util2.ly);
+//                arm_target = hand_motor.getCurrentPosition();
+//            }
+//        }
+//        else{
+//            update_arm();
+//        }
 
-        extender.setPower(
-                (util2.cross ? 1 : 0) - (util2.square ? 1 : 0)
-        );
+        //hand_motor.setPower(-util2.ly);
+        if(util2.square)
+            extend = 1;
+        else if (util2.cross)
+            extend = 0;
+        update_extender();
 
         if (util2.rbumClick) {
             grab_sample();
@@ -70,12 +84,7 @@ public class TeleOp_Robot1_5 extends RobotBase{
         }
         if(util2.lTrigClick) pos_specimen();
 
-        telemetry.addData("Arm target", arm_target);
-        telemetry.addData("Arm pos", hand_motor.getCurrentPosition());
-        telemetry.addData("Zero pos", zero_position);
-        telemetry.addData("Adj pos", adjuster_position);
-        telemetry.addData("Power", hand_motor.getPower());
-        telemetry.update();
+        printData();
 
         previous_timer = timer.seconds();
     }
