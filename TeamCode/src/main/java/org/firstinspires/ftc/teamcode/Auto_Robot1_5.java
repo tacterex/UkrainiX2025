@@ -15,68 +15,14 @@ public class Auto_Robot1_5 extends RobotBase{
 
     @Override
     public void preStart(){
-        set_arm_bound(-35, -35, 60);
-        setAngle(7.5);
+        zero_position = hand_motor.getCurrentPosition() + (int)(45 * ticks_in_degree);
+        arm_target = hand_motor.getCurrentPosition() + 90 * ticks_in_degree;
         auto_start_position();
-        extend = 0;
-        timer.reset();
     }
 
     @Override
     public void postStartLoop(){
-        update_arm();
-        update_extender();
-
-        printData();
-
-        if(timer.milliseconds() <= 10000){
-            setAngle(7.5);
-            return;
-        }
-        if(timer.milliseconds() <= 11000){
-            rotator.setPosition(rotator_max);
-            return;
-        }
-        if(timer.milliseconds() <= 11900){
-            drivetrain.calculate(-1, 0, 0, 0.5);
-            move();
-            return;
-        }
-        if(timer.milliseconds() <= 13000){
-            drivetrain.calculate(0, 0, 0, 0);
-            move();
-            return;
-        }
-        if(timer.milliseconds() <= 14000){
-            setAngle(-6);
-            return;
-        }
-        if(timer.milliseconds() <= 14500){
-            grabber.setPosition(grabber_max);
-            return;
-        }
-        if(timer.milliseconds() <= 15000){
-            rotator.setPosition(rotator_mid);
-            return;
-        }
-        if(timer.milliseconds() <= 16000){
-            rotator.setPosition(rotator_mid);
-            return;
-        }
-        if(timer.milliseconds() <= 17000){
-            drivetrain.calculate(0.5, 0, 0, 0.5);
-            move();
-            return;
-        }
-        if(timer.milliseconds() <= 18000){
-            rotator.setPosition(rotator_max);
-            return;
-        }
-        if(timer.milliseconds() <= 19000){
-            drivetrain.calculate(0, 0, 0, 0);
-            move();
-            setAngle(-35);
-            return;
-        }
+        extender.setPower(timer.milliseconds() <= 6000 ? -0.5 : 0);
+        if(timer.milliseconds() >= 1500) update_arm();
     }
 }
