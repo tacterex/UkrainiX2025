@@ -33,16 +33,22 @@ public class TeleOp_Robot1_5 extends RobotBase{
         move();
 
         //Driver2
-        if (util2.dp_up || util2.dp_down)
-            hand_motor.setPower(
-                    (util2.dp_down ? 1 : 0) - (util2.dp_up ? 1 : 0)
-            );
+        if (util2.dp_up || util2.dp_down) {
+
+        }
         else {
             arm_target += (
                     (-util2.ly) * (util2.ly > 0 ? ticks_per_s_down : ticks_per_s_up)
                             * (timer.seconds() - previous_timer)
             );
             update_arm();
+        }
+
+        if(util2.dpUpCLick){
+            set_preangle(1);
+        }
+        if(util2.dpDownClick){
+            set_preangle(-1);
         }
 
 //        if(Math.abs(util2.ly) >= 0.05){
@@ -65,6 +71,9 @@ public class TeleOp_Robot1_5 extends RobotBase{
         else if (util2.cross)
             extend = 0;
         update_extender();
+
+        if(util2.triangleClick) delta += 5;
+        if(util2.circleClick) delta -= 5;
 
         if (util2.rbumClick) {
             grab_sample();
