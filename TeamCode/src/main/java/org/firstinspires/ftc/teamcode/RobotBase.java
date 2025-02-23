@@ -14,7 +14,9 @@ import com.qualcomm.robotcore.util.Range;
 public abstract class RobotBase extends OpMode {
     DcMotor r1, r2, l1, l2;
     DcMotor hand_motor, hand_extender;
+    DcMotor specimen_placer;
     Servo grabber, adjuster, rotator;
+    Servo leftSpecGrabber, rightSpecGrabber, specRotator, specPlacer;
     CRServo extender;
 
     // Servo positions
@@ -27,12 +29,24 @@ public abstract class RobotBase extends OpMode {
             rotator_max = 0.83,
             rotator_mid = (rotator_max + rotator_zero) / 2;
 
+    final double leftSpecGrabberZero = 0.14,
+            leftSpecGrabberMax = 0.42,
+            leftSpecGrabberMid = (leftSpecGrabberMax + leftSpecGrabberZero) / 2;
+
+    final double rightSpecGrabberZero = 0.42,
+            rightSpecGrabberMax = 0.7,
+            rightSpecGrabberMid = (rightSpecGrabberMax + rightSpecGrabberZero) / 2;
+
+    final double specRotatorZero = 0.01,
+            specRotatorMax = 0.73,
+            specRotatorMid = (specRotatorMax + specRotatorZero) / 2;
+
     public static double p_arm = 0.0072, i_arm = 0.011 , d_arm = 0.00078, f_arm = 0.1;
     private PIDController armController;
     public static double arm_target;
     public int zero_position, min_position = -90, max_position = 90;
     public final double ticks_in_degree = 28 * 48.0 / 360 * 109.2 / 20.2;
-    final double[] arm_angles = {-21, -11, 50, 60};
+    final double[] arm_angles = {-20.5, -14.5, 50, 60};
     int cur_target_angle = 0;
 
     final double[] adjuster_possible_positions = {0.66, 0.58, 0.47};
@@ -43,9 +57,16 @@ public abstract class RobotBase extends OpMode {
     private PIDController extender_controller;
     int delta;
 
+    boolean specimen = false;
+    final double no_spec = 0.58, is_spec = 0.18, drop_spec = 0.02;
+    public static double p_spec = 0.022, i_spec = 0.28, d_spec = 0.00308, f_spec = 0.34;
+    final int zero_spec = 36;
+    final double ticks_in_degree_spec = 288.0 / 360;
+    private PIDController specimen_controller;
+
     DrivetrainManager drivetrain;
 
-    ElapsedTime timer;
+    ElapsedTime timer, delayTimer;
     double previous_timer;
 
     final double[][] gamepadColors = {
@@ -80,11 +101,17 @@ public abstract class RobotBase extends OpMode {
         r2 = hardwareMap.get(DcMotor.class, "r2");
         hand_motor = hardwareMap.get(DcMotor.class, "hand_motor");
         hand_extender = hardwareMap.get(DcMotor.class, "hand_extender");
+        specimen_placer = hardwareMap.get(DcMotor.class, "spec_placer");
 
         extender = hardwareMap.get(CRServo.class, "extender");
         adjuster = hardwareMap.get(Servo.class, "adjuster");
         rotator = hardwareMap.get(Servo.class, "rotator");
         grabber = hardwareMap.get(Servo.class, "grabber");
+
+        leftSpecGrabber = hardwareMap.get(Servo.class, "lsg");
+        rightSpecGrabber = hardwareMap.get(Servo.class, "rsg");
+        specRotator = hardwareMap.get(Servo.class, "rot_s");
+        specPlacer = hardwareMap.get(Servo.class, "sps");
 
         drivetrain = new DrivetrainManager();
 
@@ -99,13 +126,18 @@ public abstract class RobotBase extends OpMode {
         hand_extender.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         extender_controller = new PIDController(0.15, 0, 0.0007);
         min_extend = hand_extender.getCurrentPosition();
-        pre_max_extend = min_extend - 110;
-        max_extend = max_extend - 210;
+        pre_max_extend = min_extend - 130;
+        max_extend = max_extend - 230;
         delta = 0;
+
+        specimen_placer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        specimen_placer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        specimen_controller = new PIDController(p_spec, i_spec, d_spec);
 
         adjuster_position = 0;
 
         timer = new ElapsedTime();
+        delayTimer = new ElapsedTime();
         previous_timer = timer.seconds();
 
         first_cycle = true;
@@ -127,13 +159,18 @@ public abstract class RobotBase extends OpMode {
         grabber.setPosition(grabber_zero);
         is_grabber_mid = false;
         set_arm_bound(-35, -35, 60);
+        set_preangle(1);
+
+        specRotator.setPosition(specRotatorMax);
+        rightSpecGrabber.setPosition(rightSpecGrabberZero);
+        leftSpecGrabber.setPosition(leftSpecGrabberMax);
     }
 
     void auto_start_position(){
-        adjust(2);
-        rotator.setPosition(rotator_max);
-        grabber.setPosition(grabber_zero);
-        is_grabber_mid = false;
+        specPlacer.setPosition(no_spec);
+        specRotator.setPosition(specRotatorMax);
+        rightSpecGrabber.setPosition(rightSpecGrabberZero);
+        leftSpecGrabber.setPosition(leftSpecGrabberMax);
     }
 
     //Useful functions
@@ -165,6 +202,21 @@ public abstract class RobotBase extends OpMode {
     void flip(){
         rotator.setPosition(
                 rotator.getPosition() >= rotator_mid ? rotator_zero : rotator_max
+        );
+    }
+
+    void flip_spec(){
+        specRotator.setPosition(
+                specRotator.getPosition() >= specRotatorMid ? specRotatorZero : specRotatorMax
+        );
+    }
+
+    void grab_spec(){
+        leftSpecGrabber.setPosition(
+                leftSpecGrabber.getPosition() >= leftSpecGrabberMid ? leftSpecGrabberZero : leftSpecGrabberMax
+        );
+        rightSpecGrabber.setPosition(
+                rightSpecGrabber.getPosition() >= rightSpecGrabberMid ? rightSpecGrabberZero : rightSpecGrabberMax
         );
     }
 
@@ -215,6 +267,19 @@ public abstract class RobotBase extends OpMode {
         hand_extender.setPower(pid);
     }
 
+    void update_specimen(){
+        double t = (specimen ? is_spec : no_spec);
+//        int p = specimen_placer.getCurrentPosition();
+//        double pid = specimen_controller.calculate(p, t);
+//        double ff = f_spec * Math.cos(Math.toRadians((t - zero_spec)
+//                / ticks_in_degree_spec));
+//        double power = pid + ff;
+//        power = Range.clip(power, -0.7, 0.7);
+//        specimen_placer.setPower(power);
+
+        specPlacer.setPosition(t);
+    }
+
     void set_preangle(int index){
         cur_target_angle = Range.clip(cur_target_angle + index,
                 0, arm_angles.length - 1);
@@ -237,6 +302,9 @@ public abstract class RobotBase extends OpMode {
         telemetry.addData("Max_ext", max_extend);
         telemetry.addData("Ext", extend);
         telemetry.addData("Ext_pow", hand_extender.getPower());
+        telemetry.addLine();
+        telemetry.addData("Spec pos", specimen_placer.getCurrentPosition());
+        telemetry.addData("Spec target", (specimen ? is_spec : no_spec));
         telemetry.update();
     }
 }

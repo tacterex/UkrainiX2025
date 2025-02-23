@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class TeleOp_Robot1_5 extends RobotBase{
     GamepadUtility util1, util2;
 
-    final double ticks_per_s_up = 10200, ticks_per_s_down = 11500;
+    final double ticks_per_s = 5000;
 
     @Override
     public void init(){
@@ -38,7 +38,7 @@ public class TeleOp_Robot1_5 extends RobotBase{
         }
         else {
             arm_target += (
-                    (-util2.ly) * (util2.ly > 0 ? ticks_per_s_down : ticks_per_s_up)
+                    (-util2.ly) * ticks_per_s
                             * (timer.seconds() - previous_timer)
             );
             update_arm();
@@ -79,19 +79,30 @@ public class TeleOp_Robot1_5 extends RobotBase{
             grab_sample();
             gamepad2.rumble(300);
         }
-        if(util2.rTrigClick){
-            mid_grab();
+        if(util2.rTrigClick || util1.rTrigClick){
+            grab_spec();
             gamepad2.rumble(300);
         }
 
         if (util2.lBumClick) flip();
         adjust(-util2.ryClick);
 
-        if (util2.home) {
-            reset_arm();
-            gamepad2.rumble(200);
-        }
         if(util2.lTrigClick) pos_specimen();
+
+        if(util2.dp_right || util1.dp_right){
+            specRotator.setPosition(specRotatorMax);
+            specimen = false;
+        }
+        if(util2.dp_left || util1.dp_left){
+            specRotator.setPosition(specRotatorZero);
+            specimen = true;
+        }
+        if (util2.home || util1.home) {
+            specPlacer.setPosition(drop_spec);
+            gamepad2.rumble(200);
+        }else {
+            update_specimen();
+        }
 
         printData();
 
