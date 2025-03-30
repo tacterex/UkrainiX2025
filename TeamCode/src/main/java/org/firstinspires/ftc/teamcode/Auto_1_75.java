@@ -23,6 +23,7 @@ public class Auto_1_75 extends RobotBase{
         while(delayTimer.milliseconds() <= 1500) {continue;}
 
         moveForTime(1000, -1, 0, 0);
+        moveForTime(70, 1, 0, 0);
         delay(500);
 
         reset();
@@ -48,8 +49,9 @@ public class Auto_1_75 extends RobotBase{
         specRotator.setPosition(specRotatorZero);
         specPlacer.setPosition(is_spec);
         moveForTime(400, -1, 0, 0);
-        moveForTime(3100,0, -1, 0);
+        moveForTime(3290,0, -1, 0);
         moveForTime(1500, -1, 0, 0);
+        moveForTime(70, 1, 0, 0);
         delay(500);
 
         reset();

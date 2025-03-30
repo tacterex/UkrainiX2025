@@ -20,8 +20,8 @@ public abstract class RobotBase extends OpMode {
     CRServo extender;
 
     // Servo positions
-    final double grabber_zero = 0.57,
-            grabber_max = 1,
+    final double grabber_zero = 0.25,
+            grabber_max = 0.85,
             grabber_mid = (grabber_max + grabber_zero) / 2 - 0.0;
     private boolean is_grabber_mid;
 
@@ -29,12 +29,12 @@ public abstract class RobotBase extends OpMode {
             rotator_max = 0.83,
             rotator_mid = (rotator_max + rotator_zero) / 2;
 
-    final double leftSpecGrabberZero = 0.14,
+    final double leftSpecGrabberZero = 0.19,
             leftSpecGrabberMax = 0.42,
             leftSpecGrabberMid = (leftSpecGrabberMax + leftSpecGrabberZero) / 2;
 
     final double rightSpecGrabberZero = 0.42,
-            rightSpecGrabberMax = 0.7,
+            rightSpecGrabberMax = 0.65,
             rightSpecGrabberMid = (rightSpecGrabberMax + rightSpecGrabberZero) / 2;
 
     final double specRotatorZero = 0.01,
@@ -46,10 +46,10 @@ public abstract class RobotBase extends OpMode {
     public static double arm_target;
     public int zero_position, min_position = -90, max_position = 90;
     public final double ticks_in_degree = 28 * 48.0 / 360 * 109.2 / 20.2;
-    final double[] arm_angles = {-20.5, -14.5, 50, 60};
+    final double[] arm_angles = {-24, -14.5, 50, 60};
     int cur_target_angle = 0;
 
-    final double[] adjuster_possible_positions = {0.66, 0.58, 0.47};
+    final double[] adjuster_possible_positions = {0.67, 0.6, 0.47};
     final int L = adjuster_possible_positions.length;
     int adjuster_position = 0;
 
@@ -58,7 +58,7 @@ public abstract class RobotBase extends OpMode {
     int delta;
 
     boolean specimen = false;
-    final double no_spec = 0.58, is_spec = 0.18, drop_spec = 0.02;
+    final double no_spec = 0.705, is_spec = 0.4, drop_spec = 0.0;
     public static double p_spec = 0.022, i_spec = 0.28, d_spec = 0.00308, f_spec = 0.34;
     final int zero_spec = 36;
     final double ticks_in_degree_spec = 288.0 / 360;
@@ -103,10 +103,10 @@ public abstract class RobotBase extends OpMode {
         hand_extender = hardwareMap.get(DcMotor.class, "hand_extender");
         specimen_placer = hardwareMap.get(DcMotor.class, "spec_placer");
 
-        extender = hardwareMap.get(CRServo.class, "extender");
         adjuster = hardwareMap.get(Servo.class, "adjuster");
         rotator = hardwareMap.get(Servo.class, "rotator");
         grabber = hardwareMap.get(Servo.class, "grabber");
+        is_grabber_mid = false;
 
         leftSpecGrabber = hardwareMap.get(Servo.class, "lsg");
         rightSpecGrabber = hardwareMap.get(Servo.class, "rsg");
@@ -156,9 +156,9 @@ public abstract class RobotBase extends OpMode {
     void start_position(){
         adjust(2);
         rotator.setPosition(rotator_zero);
-        grabber.setPosition(grabber_zero);
+        grabber.setPosition(grabber_max);
         is_grabber_mid = false;
-        set_arm_bound(-35, -35, 60);
+        set_arm_bound(-35, -35, 65);
         set_preangle(1);
 
         specRotator.setPosition(specRotatorMax);
@@ -182,12 +182,9 @@ public abstract class RobotBase extends OpMode {
     }
 
     void grab_sample(){
-        if(is_grabber_mid) grabber.setPosition(grabber_zero);
-        else
-            grabber.setPosition(
-                    grabber.getPosition() >= grabber_mid ? grabber_zero : grabber_max
-            );
-        is_grabber_mid = false;
+        grabber.setPosition(
+                grabber.getPosition() >= grabber_mid ? grabber_zero : grabber_max
+        );
     }
 
     void pos_specimen(){
