@@ -21,7 +21,7 @@ public abstract class RobotBase extends OpMode {
 
     // Servo positions
     final double grabber_zero = 0.25,
-            grabber_max = 0.85,
+            grabber_max = 0.75,
             grabber_mid = (grabber_max + grabber_zero) / 2 - 0.0;
     private boolean is_grabber_mid;
 
@@ -46,10 +46,10 @@ public abstract class RobotBase extends OpMode {
     public static double arm_target;
     public int zero_position, min_position = -90, max_position = 90;
     public final double ticks_in_degree = 28 * 48.0 / 360 * 109.2 / 20.2;
-    final double[] arm_angles = {-24, -14.5, 50, 60};
+    final double[] arm_angles = {-21.4, -14.5, 50, 60};
     int cur_target_angle = 0;
 
-    final double[] adjuster_possible_positions = {0.67, 0.6, 0.47};
+    final double[] adjuster_possible_positions = {0.67, 0.6, 0.485};
     final int L = adjuster_possible_positions.length;
     int adjuster_position = 0;
 
@@ -156,7 +156,7 @@ public abstract class RobotBase extends OpMode {
     void start_position(){
         adjust(2);
         rotator.setPosition(rotator_zero);
-        grabber.setPosition(grabber_max);
+        grabber.setPosition(grabber_zero);
         is_grabber_mid = false;
         set_arm_bound(-35, -35, 65);
         set_preangle(1);
